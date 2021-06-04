@@ -1,5 +1,4 @@
-clear
-
+%clear
 %発電機の内部状態 (δ,E,Δω) の時間応答を表示する
 %how to use
 %1. ある状態 (δ*,E*,Δω*) から [Pmech*,Vfield*]を計算
@@ -19,12 +18,12 @@ Bred = - inv(diag(Xq) - diag(Xq)*B*diag(Xq));
 
 
 %時間区間とgenerator_stateの初期値([delta; E; deltaomega] = [generator_state(1:3); generator_state(4:6); generator_state(7:9)])
-tspan = [0 100];
-initial_generator_state = [1.1;2.1;1.1;3;2.1;1;0;0;0];
+%tspan = [0 100];
+%initial_generator_state = [1.1;2.1;1.1;3;2.1;1;0;0;0];
 
 
 %ある内部状態の定常値 (δ*,E*,Δω*)
-steady_generator_state = [1;2;1.1;3;2;1.5;0;0;0];
+%steady_generator_state = [1;2;1.1;3;2;1.5;0;0;0];
 delta_star = steady_generator_state(1:3);
 E_star = steady_generator_state(4:6);
 
@@ -35,7 +34,7 @@ E_star = steady_generator_state(4:6);
 
 %(t,generator_state,Xd,Xq,Bred,B,Pmech_star,Vfield_star)を引数とする関数generatorをwrapし、引数を(t,generator_state)だけにする
 get_dx_nonlinear_ode_wrap = @(t, generator_state) get_dx_nonlinear_ode(t, generator_state, Xd, Xq, Bred, B, Pmech_star, Vfield_star);
-get_dx_nonlinear_ode_wrap(0, steady_generator_state)  %absolutely 0
+get_dx_nonlinear_ode_wrap(0, steady_generator_state);  %absolutely 0
 
 
 %時間tSolに対する数値的に求めた常微分方程式の解generator_state_sol
