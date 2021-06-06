@@ -15,9 +15,9 @@ function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, B, Pmech_star, Vfield_sta
   omega0 = 376.9911;   %系統周波数：60[Htz]*2pi
 
   %tの従属変数「δ：delta, E, Δω：deltaomega」
-  delta = [x(1:3)];
-  E = [x(4:6)];
-  deltaomega = [x(7:9)];
+  delta = x(1:3);
+  E = x(4:6);
+  deltaomega = x(7:9);
 
 
   %定義：ddelta/dt, dE/dt, ddeltaomega/dt

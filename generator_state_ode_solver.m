@@ -29,7 +29,7 @@ E_star = steady_generator_state(4:6);
 
 
 %状態 (δ*,E*,Δω*) から [Pmech*,Vfield*]を計算
-%[Pmech_star,Vfield_star]を返り値とする関数get_steady_Pmech_Vfieldに、引数(delta_star,E_star,Bred,Xq,Xd)を渡して計算させる
+%[Pmech_star,Vfield_star]を返り値とする関数get_steady_Pmech_Vfieldに、引数(delta_star,E_star,Bred,Xq,Xd)を渡して計算
 [Pmech_star,Vfield_star] = get_steady_Pmech_Vfield(delta_star,E_star,Bred,Xq,Xd);
 
 
