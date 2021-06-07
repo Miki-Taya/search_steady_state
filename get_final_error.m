@@ -20,7 +20,7 @@ function final_error = get_final_error(cnt,tspan,initial_generator_state)
   [Pmech_star,Vfield_star] = get_steady_Pmech_Vfield(delta_star,E_star,Bred,Xq,Xd);
 
 
-  get_dx_nonlinear_ode_wrap = @(t, generator_state) get_dx_nonlinear_ode(t, generator_state, Xd, Xq, Bred, B, Pmech_star, Vfield_star);
+  get_dx_nonlinear_ode_wrap = @(tspan, generator_state) get_dx_nonlinear_ode(tspan, generator_state, Xd, Xq, Bred, B, Pmech_star, Vfield_star);
 
   [t_sol generator_state_sol] = ode45(get_dx_nonlinear_ode_wrap, tspan, initial_generator_state);
 
