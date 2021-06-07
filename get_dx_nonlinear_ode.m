@@ -19,7 +19,7 @@ function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, B, Pmech_star, Vfield_sta
   E = x(4:6);
   deltaomega = x(7:9);
 
-60
+
   %定義：ddelta/dt, dE/dt, ddeltaomega/dt
   for i = 1:3
     sigma_cos = 0;
@@ -32,9 +32,9 @@ function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, B, Pmech_star, Vfield_sta
     dE(i) = (-Xd(i)/Xq(i)*E(i) - (Xd(i)-Xq(i))*sigma_cos + Vfield_star(i)) / taud(i);
     ddeltaomega(i) = (E(i)*sigma_sin - D(i)*deltaomega(i) + Pmech_star(i)) / M(i);
   end
-70
+
 
   %定義：dx/dt = [ ddelta/dt; dE/dt; ddeltaomega/dt]
   dx = transpose([ddelta dE ddeltaomega]);
-80
+
 end
