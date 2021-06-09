@@ -1,6 +1,6 @@
 %end_timeでの状態の値と定常値の差を返す関数
 
-function plot_generator_state(cnt,tspan,initial_generator_state)
+function plot_generator_state(cnt,tspan,steady_generator_state)
 
   %パラメータ設定
   y12 = imag(inv(0.085i));  %1-2間送電線のインピーダンス：z12=0.085j
@@ -12,7 +12,7 @@ function plot_generator_state(cnt,tspan,initial_generator_state)
 
 
   error = 10.^cnt;
-  steady_generator_state = initial_generator_state + [1;1;1;1;1;1;0;0;0]*error;
+  initial_generator_state = steady_generator_state + [1;1;1;1;1;1;0;0;0]*error;
 
   delta_star = steady_generator_state(1:3);
   E_star = steady_generator_state(4:6);
