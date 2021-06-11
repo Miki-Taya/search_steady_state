@@ -64,11 +64,17 @@ A = diag(Xdq) * A;
 B = diag(Xdq) * B;
 C = diag(eh) + C;
 
-eig(B)
-
+Lo = L - C*A/B
 
 psi = [zeros(3) omega0*eye(3) zeros(3); -inv(M)*L -inv(M)*D -inv(M)*C; inv(taud)*B zeros(3) inv(taud)*A];
 
-lamda = eig(psi)
+try chol(Lo)
+    disp('Matrix is symmetric positive definite.')
+catch ME
+    disp('Matrix is not symmetric positive definite')
+end
+
+lamdapsi = eig(psi)
+lamdaA = eig(A)
 lamdaB = eig(B)
 lamdaL = eig(L)
