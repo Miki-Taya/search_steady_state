@@ -16,8 +16,8 @@ function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, B, Pmech_star, Vfield_sta
 
   %tの従属変数「δ：delta, E, Δω：deltaomega」
   delta = x(1:3);
-  E = x(4:6);
-  deltaomega = x(7:9);
+  deltaomega = x(4:6);
+  E = x(7:9);
 
 
   %定義：ddelta/dt, dE/dt, ddeltaomega/dt
@@ -29,12 +29,12 @@ function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, B, Pmech_star, Vfield_sta
       sigma_sin = sigma_sin + E(j)*Bred(i,j)*sin(delta(i)-delta(j));
     end
     ddelta(i) = omega0*deltaomega(i);
-    dE(i) = (-Xd(i)/Xq(i)*E(i) - (Xd(i)-Xq(i))*sigma_cos + Vfield_star(i)) / taud(i);
     ddeltaomega(i) = (E(i)*sigma_sin - D(i)*deltaomega(i) + Pmech_star(i)) / M(i);
+    dE(i) = (-Xd(i)/Xq(i)*E(i) - (Xd(i)-Xq(i))*sigma_cos + Vfield_star(i)) / taud(i);
   end
 
 
   %定義：dx/dt = [ ddelta/dt; dE/dt; ddeltaomega/dt]
-  dx = transpose([ddelta dE ddeltaomega]);
+  dx = transpose([ddelta ddeltaomega dE]);
 
 end

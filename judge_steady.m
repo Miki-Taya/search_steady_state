@@ -2,7 +2,7 @@ clear
 
 %安定性を定常値を入力
 
-delta_star = [2.1;2.2;2.4];
+delta_star = [1.1;1.2;1.4];
 E_star = [4;5;3];
 
 %パラメータ設定
@@ -70,3 +70,5 @@ eig(B)
 psi = [zeros(3) omega0*eye(3) zeros(3); -inv(M)*L -inv(M)*D -inv(M)*C; inv(taud)*B zeros(3) inv(taud)*A];
 
 lamda = eig(psi)
+lamdaB = eig(B)
+lamdaL = eig(L)
