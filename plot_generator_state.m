@@ -1,28 +1,24 @@
 %end_timeでの状態の値と定常値の差を返す関数
 
-function plot_generator_state(cnt,tspan,steady_generator_state)
+function plot_generator_state(cnt,tspan,initial_generator_state, Pmech_star, Vfield_star)
 
   %パラメータ設定
-  y12 = imag(inv(0.085i));  %1-2間送電線のインピーダンス：z12=0.085j
-  y23 = imag(inv(0.092i));  %2-3間送電線のインピーダンス：z32=0.092j
-  Xd = [1.6;1.4;1.2];
-  Xq = [0.25;0.15;0.15];
-  B = [y12 -y12 0; -y12 y12+y23 -y23; 0 -y23 y23];  %B：アドミタンス行列Yの虚部であるサセプタンス行列
-  Bred = - inv(diag(Xq) - diag(Xq)*B*diag(Xq));
+  Xq = [0.9360;0.9110;0.6670];
+  Xd = [1.5690;1.6510;1.2200];
+  Bred = [-6.1331,1.4914,1.6779; 1.4914,-5.9131,2.2693; 1.6779,2.2693,-5.6149];
 
-
-  error = 10.^cnt;
-  initial_generator_state = steady_generator_state + [1;1;1;0;0;0;1;1;1]*error;
+  error = cnt;
+  initial_generator_state = steady_generator_state + [1;1;1;0.0001;0.0001;0.0001;1;1;1]*error
 
   delta_star = steady_generator_state(1:3);
   E_star = steady_generator_state(7:9);
 
-  [Pmech_star,Vfield_star] = get_steady_Pmech_Vfield(delta_star,E_star,Bred,Xq,Xd);
+  [Pmech_star,Vfield_star] = get_steady_Pmech_Vfield(delta_star,E_star,Bred,Xq,Xd)
 
 
-  get_dx_nonlinear_ode_wrap = @(t, generator_state) get_dx_nonlinear_ode(t, generator_state, Xd, Xq, Bred, B, Pmech_star, Vfield_star);
+  get_dx_nonlinear_ode_wrap = @(t, generator_state) get_dx_nonlinear_ode(t, generator_state, Xd, Xq, Bred, Pmech_star, Vfield_star);
 
-  [t_sol generator_state_sol] = ode45(get_dx_nonlinear_ode_wrap, tspan, initial_generator_state);
+  [t_sol, generator_state_sol] = ode45(get_dx_nonlinear_ode_wrap, tspan, initial_generator_state);
 
   delta = generator_state_sol(:,1:3);
   deltaomega = generator_state_sol(:,4:6);

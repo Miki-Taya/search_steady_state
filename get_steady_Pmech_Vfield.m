@@ -4,6 +4,9 @@
 
 function [Pmech_star, Vfield_star] = get_steady_Pmech_Vfield(delta, E, Bred, Xq, Xd)
 
+  Pmech_star = zeros(1,3);
+  Vfield_star = zeros(1,3);
+ 
   for i = 1:3
     sigma_sin = 0;  %f/(-E)
     sigma_cos = 0;  %-g
