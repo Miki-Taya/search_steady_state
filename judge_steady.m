@@ -2,18 +2,17 @@ clear
 
 %安定性を定常値を入力
 
-delta_star = [1.1;1.2;1.4];
-E_star = [4;5;3];
+delta_star = [1.1;1.6;1.4];
+E_star = [1;2.5;2.1];
+
 
 %パラメータ設定
-taud = diag([5 6 8]);
-D = diag([2 1.8 2]);
-M = diag([18 13 12]);
-y12 = imag(inv(0.085i));  %1-2間送電線のインピーダンス：z12=0.085j
-y23 = imag(inv(0.092i));  %2-3間送電線のインピーダンス：z32=0.092j
-Xd = [1.6;1.4;1.2];
-Xq = [0.25;0.15;0.15];
-BB = [y12 -y12 0; -y12 y12+y23 -y23; 0 -y23 y23];  %B：アドミタンス行列Yの虚部であるサセプタンス行列
+taud = diag([5.1400, 5.9000, 8.9700]);
+D = diag([2, 2, 2]);
+M = diag([100, 18, 12]);
+Xq = [0.9360;0.9110;0.6670];
+Xd = [1.5690;1.6510;1.2200];
+BB = [-6.1331,1.4914,1.6779; 1.4914,-5.9131,2.2693; 1.6779,2.2693,-5.6149];  %BB：アドミタンス行列Yの虚部であるサセプタンス行列
 Bred = - inv(diag(Xq) - diag(Xq)*BB*diag(Xq));
 omega0 = 376.9911;  
 
@@ -64,17 +63,47 @@ A = diag(Xdq) * A;
 B = diag(Xdq) * B;
 C = diag(eh) + C;
 
-Lo = L - C*A/B
+psi = [zeros(3) omega0*eye(3) zeros(3); -M\L -M\D -M\C; taud\B zeros(3) taud\A];
 
-psi = [zeros(3) omega0*eye(3) zeros(3); -inv(M)*L -inv(M)*D -inv(M)*C; inv(taud)*B zeros(3) inv(taud)*A];
+lamdapsi = eig(psi);
+lamdaA = eig(A);
+lamdaB = eig(B);
+lamdaL = eig(L);
 
-try chol(Lo)
-    disp('Matrix is symmetric positive definite.')
-catch ME
-    disp('Matrix is not symmetric positive definite')
+
+
+%必要な条件
+% linear:[psi is steady](線形システムの漸近安定性) and [L and B have zero eigenvalue]
+% feedback:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
+% non-linear: 蓄積関数 W が半正定関数
+
+% psi や A の安定性や L や B がゼロ固有値を持つかどうかを判定
+if all(real(lamdapsi) < 0)
+    disp('Matrix: psi is steady.');
 end
 
-lamdapsi = eig(psi)
-lamdaA = eig(A)
-lamdaB = eig(B)
-lamdaL = eig(L)
+if all(real(lamdaA) < 0)
+    disp('Matrix: A is steady.');
+end
+
+if any(abs(lamdaB) < 10^(-15)) % e-17 程度の誤差がある
+    disp('Matrix: B has zero eigenvalue.');
+end
+
+if any(abs(lamdaL) < 10^(-15))
+    disp('Matrix: L has zero eigenvalue.');
+end
+
+%Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）
+Lo = L - C*inv(A)*B;
+
+try chol(Lo); %対称正定値行列を対称部分と上三角部分だけ使用して表す関数 chol を呼ぶ
+    disp('Matrix: Lo=L-C*inv(A)*B　is symmetric positive definite.') % disp は値を表示 
+catch ME % try error である MException の略
+    disp('Matrix: Lo=L-C*inv(A)*B　is not symmetric positive definite')
+end
+
+
+
+
+

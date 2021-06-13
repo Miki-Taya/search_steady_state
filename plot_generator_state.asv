@@ -76,10 +76,7 @@ function t_U = plot_generator_state(cnt,tspan,steady_generator_state)
       disp('W is not positive semi-definite.');
   end
   
-  %--------------------------------------------------------------
-  %　必要じゃないなら、ここを消して、関数の返り値や呼び出す側の変数もなくす！
+  
   t_U = [t_sol,U];
-  %--------------------------------------------------------------
-
 
 end

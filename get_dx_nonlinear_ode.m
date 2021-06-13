@@ -38,6 +38,6 @@ function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, Pmech_star, Vfield_star)
 
 
   %定義：dx/dt = [ ddelta/dt; dE/dt; ddeltaomega/dt]
-  dx = transpose([ddelta ddeltaomega dE]);
+  dx = transpose([ddelta, ddeltaomega, dE]);
 
 end
