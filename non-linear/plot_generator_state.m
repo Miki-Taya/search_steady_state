@@ -1,5 +1,5 @@
 
-function t_U = plot_generator_state(cnt,tspan,steady_generator_state)
+function t_U = plot_generator_state(error,tspan,steady_generator_state)
 
   %パラメータ設定
   Xq = [0.9360;0.9110;0.6670];
@@ -7,8 +7,8 @@ function t_U = plot_generator_state(cnt,tspan,steady_generator_state)
   BB = [-6.1331,1.4914,1.6779; 1.4914,-5.9131,2.2693; 1.6779,2.2693,-5.6149];  %BB：アドミタンス行列Yの虚部であるサセプタンス行列
   Bred = - inv(diag(Xq) - diag(Xq)*BB*diag(Xq));
 
-  error = cnt;
-  initial_generator_state = steady_generator_state + [1;1;1;0.0001;0.0001;0.0001;1;1;1]*error;
+ 
+  initial_generator_state = steady_generator_state + error
 
   delta_star = steady_generator_state(1:3);
   E_star = steady_generator_state(7:9);
@@ -43,38 +43,43 @@ function t_U = plot_generator_state(cnt,tspan,steady_generator_state)
   U = transpose(U);
 
 
-  subplot(4,1,1)
+  subplot(1,3,1)
   plot(t_sol, delta)
   yline(delta_star)
   ylabel('delta')
   legend('delta1','delta2','delta3')
 
-  subplot(4,1,2)
+  subplot(1,3,2)
   plot(t_sol, deltaomega)
   yline(0)
   ylabel('deltaomega')
   legend('deltaomega1','deltaomega2','deltaomega3')
 
-  subplot(4,1,3)
+  subplot(1,3,3)
   plot(t_sol, E)
   yline(E_star)
   ylabel('E')
   legend('E1','E2','E3')
   
+  %{
   subplot(4,1,4)
   plot(t_sol, U)
   ylabel('U')
   legend('U')
-  
+  %}
   diff_deltaomega = deltaomega(end,:)
   diff_E = E(end,:) - E_star
   
+  
+  %{
   %蓄積関数:W が半正定関数がどうか調べる
   if all(diff(diff(U)) >= 0)
       disp('W is positive semi-definite.');
   else
       disp('W is not positive semi-definite.');
   end
+  %}
+  
   
   %--------------------------------------------------------------
   %　必要じゃないなら、ここを消して、関数の返り値や呼び出す側の変数もなくす！
