@@ -2,17 +2,10 @@ clear
 
 %安定性を定常値を入力
 
-%安定
 %delta_star = [1.1;1.6;1.4];
 %E_star = [1;2.5;2.1];
-
-%安定
 steady_delta = [0.15708;0;-0.15708];
 steady_E = [3.2225;3.2225;3.2225];
-
-%不安定
-%steady_delta = [0.942478;0;-1.41372];
-%steady_E = [3.2225;3.2225;3.2225];
 
 %パラメータ設定
 taud = diag([5.1400, 5.9000, 8.9700]);
@@ -88,38 +81,34 @@ lamdaL = eig(L);
 % psi や A の安定性や L や B がゼロ固有値を持つかどうかを判定
 if all(real(lamdapsi) < 0)
     disp('Matrix: psi is steady.');
-else
-    disp('Matrix: psi is not steady.');
 end
 
 if all(real(lamdaA) < 0)
     disp('Matrix: A is steady.');
-else
-    disp('Matrix: A is not steady.');
 end
 
 if any(abs(lamdaB) < 10^(-15)) % e-17 程度の誤差がある
     disp('Matrix: B has zero eigenvalue.');
-else
-    disp('Matrix: B has not zero eigenvalue.');
 end
 
 if any(abs(lamdaL) < 10^(-15))
     disp('Matrix: L has zero eigenvalue.');
-else
-    disp('Matrix: L has not zero eigenvalue.');
 end
 
 %Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）
-Lo = L - C*(A\B);
+Lo = L - C*inv(A)*B;
+lamdaLo = eig(Lo)
+
+all(eig(Lo) >= 0)
+
 
 try chol(Lo); %対称正定値行列を対称部分と上三角部分だけ使用して表す関数 chol を呼ぶ
     disp('Matrix: Lo=L-C*inv(A)*B　is symmetric positive definite.') % disp は値を表示 
 catch ME % try error である MException の略
-    if all(eig(Lo) >= 0) & (Lo - transpose(Lo) < 10^(-10))
+    if all(eig(Lo) >= 0) & Lo == transpose(Lo)
       disp('Matrix: Lo=L-C*inv(A)*B　is symmetric positive semi-definite')
     else
-      disp('Matrix: Lo=L-C*inv(A)*B　is not symmetric positive semi-definite')
+      disp('Matrix: Lo=L-C*inv(A)*B　is not symmetric positive definite')
     end
 end
 

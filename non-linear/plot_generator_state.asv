@@ -60,7 +60,7 @@ function t_U = plot_generator_state(error,tspan,steady_generator_state)
   yline(E_star)
   ylabel('E')
   legend('E1','E2','E3')
-  %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
+  axis([
   
   %{
   subplot(4,1,4)
