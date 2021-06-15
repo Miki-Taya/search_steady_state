@@ -45,14 +45,15 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   ylabel('E')
   legend('E1','E2','E3')
   %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
-  sgtitle(['初期誤差: ',num2str(transpose(error))]);
+  sgt = sgtitle({'初期誤差',num2str(transpose(error)),' ' ,'初期値',num2str(transpose(initial_generator_state))});
+  sgt.FontSize = 10;
   
   %最終値と定常値との差を表示したいなら ; 外して
   diff_deltaomega = deltaomega(end,:) - deltaomega_star;
   diff_E = E(end,:) - E_star;
   
   
-
+  % flag_accum == 1 なら [Ured_G], [W_F], [Wred_G], [W_F + Wred_G] などのグラフを表示する
   if flag_accum == 1
       plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, Bred, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
   end
