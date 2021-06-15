@@ -6,13 +6,12 @@
 %dx = [ ddelta; dE; ddeltaomega]（9×1行列） を返す
 
 
-function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, Pmech_star, Vfield_star)
+function dx = get_dx_nonlinear_ode(t, x, Xd, Xq, Bred, Pmech_star, Vfield_star, omega0, M)
 
   %パラメータ設定
   taud = [5.1400, 5.9000, 8.9700];
   D = [2, 2, 2];
-  M = [100, 18, 12];
-  omega0 = 376.9911;   %系統周波数：60[Htz]*2pi
+
 
   %tの従属変数「δ：delta, E, Δω：deltaomega」
   delta = x(1:3);
