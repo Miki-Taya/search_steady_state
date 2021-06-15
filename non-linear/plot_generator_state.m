@@ -45,6 +45,7 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   ylabel('E')
   legend('E1','E2','E3')
   %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
+  sgtitle(['初期誤差: ',num2str(transpose(error))]);
   
   %最終値と定常値との差を表示したいなら ; 外して
   diff_deltaomega = deltaomega(end,:) - deltaomega_star;
