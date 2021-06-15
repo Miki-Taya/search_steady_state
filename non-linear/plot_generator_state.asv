@@ -1,5 +1,4 @@
 
-
 function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag_accum_diff)
 
   %パラメータ設定
@@ -54,7 +53,7 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   diff_E = E(end,:) - E_star;
   
   
-  % flag_accum == 1 なら [Ured_G], [W_F], [Wred_G], [W_F + Wred_G] などのグラフを表示する
+  % flag_accum == 1 なら [Ured_G, W_F, Wred_G, W_F + Wred_G などのグラフを表示する
   if flag_accum == 1
       plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, Bred, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
   end
