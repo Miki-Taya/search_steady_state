@@ -1,5 +1,5 @@
 
-function t_U = plot_generator_state(error,tspan,steady_generator_state)
+function plot_generator_state(error,tspan,steady_generator_state)
 
   %パラメータ設定
   Xq = [0.9360;0.9110;0.6670];
@@ -84,7 +84,7 @@ function t_U = plot_generator_state(error,tspan,steady_generator_state)
   
   %--------------------------------------------------------------
   %　必要じゃないなら、ここを消して、関数の返り値や呼び出す側の変数もなくす！
-  t_U = [t_sol,U];
+  %t_U = [t_sol,U];
   %--------------------------------------------------------------
 
 
