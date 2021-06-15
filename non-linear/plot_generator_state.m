@@ -27,24 +27,45 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   delta = generator_state_sol(:,1:3);
   deltaomega = generator_state_sol(:,4:6);
   E = generator_state_sol(:,7:9);
+
+  for t = 1:size(t_sol)
+  U(t) = 0;
+    for i = 1:3
+      temp_U(t,i) = 0;
+      for j = 1:3
+        temp_U(t,i) = temp_U(t,i) + E(t,j)*Bred(i,j)*cos(delta(t,i)-delta(t,j));
+      end
+      U(t) = U(t) + Xd(i)*E(t,i)^2/(Xq(i)*(Xd(i)-Xq(i))) + E(t,i)*temp_U(t,i) ;
+    end
+    U(t) = U(t)/2;
+  end
+  U = transpose(U);
   
-  subplot(1,3,1)
+  subplot(4,1,1)
   plot(t_sol, delta)
   yline(delta_star)
   ylabel('delta')
   legend('delta1','delta2','delta3')
 
-  subplot(1,3,2)
+  subplot(4,1,2)
   plot(t_sol, deltaomega)
   yline(0)
   ylabel('deltaomega')
   legend('deltaomega1','deltaomega2','deltaomega3')
 
-  subplot(1,3,3)
+  subplot(4,1,3)
   plot(t_sol, E)
   yline(E_star)
   ylabel('E')
   legend('E1','E2','E3')
+  
+  subplot(4,1,4)
+  plot(t_sol, U)
+  ylabel('u')
+  legend('u')
+  
+
+  
   %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
   sgt = sgtitle({'初期誤差',num2str(transpose(error)),' ' ,'初期値',num2str(transpose(initial_generator_state))});
   sgt.FontSize = 10;

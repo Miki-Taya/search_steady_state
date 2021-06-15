@@ -30,6 +30,22 @@ function plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, Bred, 
 
   
   for t = 1:sol_size
+    U(t) = 0;
+    for i = 1:3
+      temp_U(t,i) = 0;
+      for j = 1:3
+        temp_U(t,i) = temp_U(t,i) + E(t,j)*Bred(i,j)*cos(delta(t,i)-delta(t,j));
+      end
+      U(t) = U(t) + Xd(i)*E(t,i)^2/(Xq(i)*(Xd(i)-Xq(i))) + E(t,i)*temp_U(t,i) ;
+    end
+    U(t) = U(t)/2;
+  end
+  U = transpose(U);  
+  
+  
+  
+  
+  for t = 1:sol_size
       
     for i = 1:3
       sigma_cos = 0;
@@ -79,6 +95,10 @@ function plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, Bred, 
   figure;
   plot(t_sol,W_F+Wred_G)
   title("W_F + W^{red}_G")
+  
+  figure;
+  plot(t_sol,U)
+  title("U")
 
   
   
