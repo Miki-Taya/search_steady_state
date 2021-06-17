@@ -80,14 +80,16 @@ lamdaA = eig(A);
 lamdaB = eig(B);
 lamdaL = eig(L);
 
+sum(L,2);
+sum(B,2);
 
 
 %必要な条件
-% linear:[psi is steady](線形システムの漸近安定性) and [L and B have zero eigenvalue]
-% feedback:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
+% linear:[psi is steady](線形システムの漸近安定性) and [matrix:L * span{1} = 0, matrix:B * span{1} = 0]
+% feedback Gの受動性:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
 % non-linear: 蓄積関数 W が半正定関数
 
-% psi や A の安定性や L や B がゼロ固有値を持つかどうかを判定
+% psi や A の安定性を判定
 if all(real(lamdapsi) < 0)
     disp('Matrix: psi is steady.');
 else
@@ -100,16 +102,17 @@ else
     disp('Matrix: A is not steady.');
 end
 
-if any(abs(lamdaB) < 10^(-15)) % e-17 程度の誤差がある
-    disp('Matrix: B has zero eigenvalue.');
+% L や B のカーネルが 1 ( matrix:L * span{1} = 0 )かどうかを判定
+if all(abs(sum(B,2)) < 10^(-12)) % e-15 程度の誤差がある
+    disp('Kernel of Matrix:B is span{1}.');
 else
-    disp('Matrix: B has not zero eigenvalue.');
+    disp('Kernel of Matrix:B is not span{1}.');
 end
 
-if any(abs(lamdaL) < 10^(-15))
-    disp('Matrix: L has zero eigenvalue.');
+if all(abs(sum(L,2)) < 10^(-12))
+    disp('Kernel of Matrix:L is span{1}.');
 else
-    disp('Matrix: L has not zero eigenvalue.');
+    disp('Kernel of Matrix:L is not span{1}.');
 end
 
 %Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）

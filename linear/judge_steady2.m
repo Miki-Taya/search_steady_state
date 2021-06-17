@@ -74,7 +74,7 @@ lamdaL = eig(L);
 
 %必要な条件
 % linear:[psi is steady](線形システムの漸近安定性) and [L and B have zero eigenvalue]
-% feedback:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
+% 受動性:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
 % non-linear: 蓄積関数 W が半正定関数
 
 % psi や A の安定性や L や B がゼロ固有値を持つかどうかを判定

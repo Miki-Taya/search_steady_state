@@ -271,35 +271,15 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
  %}
       
-    % t_sol による解を t=1(s) の間隔で差分を取りたい。
-    tsp = tspan(2);
-    [sz,~] = size(t_sol);
-    index = round(linspace(1,sz,tsp+1));
-    t = zeros(1,tsp-1);
-    W_FGred_rgh = zeros(1,tsp);
-    
-    for i = 1:tsp
-        if index(i) == 1
-            W_FGred_rgh(i) = W_F(index(i))+Wred_G(index(i));
-            continue
-        end
-        t(i-1) = t_sol(index(i));
-        W_FGred_rgh(i) = W_F(index(i))+Wred_G(index(i));
-    end
 
+    dff_W_FGred = diff(W_F+Wred_G);
     figure;
-    plot([0,t],W_FGred_rgh)
-    title(" W_F + W^{red}_G ")
-
-    W_FGred_rgh
-    dff_W_FGred_rgh = diff(W_FGred_rgh);
-    figure;
-    plot(t,dff_W_FGred_rgh) 
+    plot(t_sol,dff_W_FGred) 
     title("diff( W_F + W^{red}_G )")
     yline(0)
     
-    max_diff_W_FGred = max(dff_W_FGred_rgh)
-    dff_W_FGred_rgh
+    max_diff_W_FGred = max(dff_W_FGred)
+    
     
     
   %{

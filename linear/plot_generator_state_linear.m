@@ -1,8 +1,6 @@
-%end_timeでの状態の値と定常値の差を返す関数
+% plotして、end_timeでの状態の値と定常値の差を返す関数
 
-function dff = plot_generator_state_linear(cnt, tspan, psi)
-
-  error = [1;1;1;0.0001;0.0001;0.0001;1;1;1].*cnt;
+function last = plot_generator_state_linear(error, tspan, psi)
 
   get_dx_linear_ode_wrap = @(tspan, error) get_dx_linear_ode(tspan, error, psi);
 
@@ -12,7 +10,7 @@ function dff = plot_generator_state_linear(cnt, tspan, psi)
   deltaomega = generator_state_sol(:,4:6);
   E = generator_state_sol(:,7:9);
 
-  dff = generator_state_sol(end,:);
+  last = generator_state_sol(end,:);
   
   subplot(3,1,1)
   plot(t_sol, delta)
@@ -28,5 +26,8 @@ function dff = plot_generator_state_linear(cnt, tspan, psi)
   plot(t_sol, E)
   ylabel('E')
   legend('E1','E2','E3')
+  
+  sgt = sgtitle(['＜線形モデル応答＞　初期値:',num2str(transpose(error))]);
+  sgt.FontSize = 10;
 
 end
