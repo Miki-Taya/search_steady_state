@@ -1,6 +1,6 @@
 
 
-function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag_accum_diff)
+function plot_generator_state(error,tspan,initial_generator_state,steady_generator_state,flag_accum,flag_accum_diff)
 
   %パラメータ設定
   Xq = [0.9360;0.9110;0.6670];
@@ -9,9 +9,6 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   Bred = - inv(diag(Xq) - diag(Xq)*BB*diag(Xq));
   omega0 = 376.9911;  %系統周波数：60[Htz]*2pi
   M = [100, 18, 12];
-
- 
-  initial_generator_state = steady_generator_state + error
 
   delta_star = steady_generator_state(1:3);
   deltaomega_star = steady_generator_state(4:6);
@@ -31,20 +28,20 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   subplot(1,3,1)
   plot(t_sol, delta)
   yline(delta_star)
-  ylabel('delta')
-  legend('delta1','delta2','delta3')
+  title('δ')
+  legend('δ_1','δ_2','δ_3')
 
   subplot(1,3,2)
   plot(t_sol, deltaomega)
   yline(0)
-  ylabel('deltaomega')
-  legend('deltaomega1','deltaomega2','deltaomega3')
+  title('Δω')
+  legend('Δω_1','Δω_2','Δω_3')
 
   subplot(1,3,3)
   plot(t_sol, E)
   yline(E_star)
-  ylabel('E')
-  legend('E1','E2','E3')
+  title('E')
+  legend('E_1','E_2','E_3')
   %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
   sgt = sgtitle({'初期誤差',num2str(transpose(error)),' ' ,'初期値',num2str(transpose(initial_generator_state))});
   sgt.FontSize = 10;
@@ -56,7 +53,7 @@ function plot_generator_state(error,tspan,steady_generator_state,flag_accum,flag
   
   % flag_accum == 1 なら [Ured_G], [W_F], [Wred_G], [W_F + Wred_G] などのグラフを表示する
   if flag_accum == 1
-      plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, Bred, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
+      plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, Bred, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
   end
 
   
