@@ -16,7 +16,14 @@ function psi = get_psi(steady_generator_state)
     BB = [y12 -y12 0; -y12 y12+y23 -y23; 0 -y23 y23];  %B：アドミタンス行列Yの虚部であるサセプタンス行列
     Bred = - inv(diag(Xq) - diag(Xq)*BB*diag(Xq));
     omega0 = 376.9911;  
-
+    k = zeros(3);
+    h = zeros(3);
+    L = zeros(3);
+    A = zeros(3);
+    B = zeros(3);
+    C = zeros(3);
+    
+    
     for i = 1:3
         for j = 1:3
             k(i,j) = -Bred(i,j)*cos(delta_star(i) - delta_star(j));
@@ -55,6 +62,7 @@ function psi = get_psi(steady_generator_state)
         end
     end
 
+    eh = zeros(1,3);
     for i = 1:3
         eh(i) = 2*E_star(i)*h(i,i);
     end
@@ -64,5 +72,5 @@ function psi = get_psi(steady_generator_state)
     B = diag(Xdq) * B;
     C = diag(eh) + C;
     
-    psi = [zeros(3) omega0*eye(3) zeros(3); -inv(M)*L -inv(M)*D -inv(M)*C; inv(taud)*B zeros(3) inv(taud)*A];
+    psi = [zeros(3) omega0*eye(3) zeros(3); -M\L -M\D -M\C; taud\B zeros(3) taud\A];
 end
