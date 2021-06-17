@@ -103,13 +103,13 @@ else
 end
 
 % L や B のカーネルが 1 ( matrix:L * span{1} = 0 )かどうかを判定
-if all(abs(sum(B,2)) < 10^(-12)) % e-15 程度の誤差がある
+if all(abs(sum(B,2)) < 10^(-14)) % e-15 程度の誤差がある
     disp('Kernel of Matrix:B is span{1}.');
 else
     disp('Kernel of Matrix:B is not span{1}.');
 end
 
-if all(abs(sum(L,2)) < 10^(-12))
+if all(abs(sum(L,2)) < 10^(-14))
     disp('Kernel of Matrix:L is span{1}.');
 else
     disp('Kernel of Matrix:L is not span{1}.');

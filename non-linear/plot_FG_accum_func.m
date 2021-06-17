@@ -181,8 +181,13 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
         end
         Wred_G(t) = Ured_G(t) - Ured_G_star - trans_nablaU * x_G;
-
+        if mod(t,100) == 0
+            Ured_G(t)
+            trans_nablaU * x_G
+        end
   end
+  
+  Ured_G_star
   
   
   
@@ -273,8 +278,10 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
       
 
     dff_W_FGred = diff(W_F+Wred_G);
+    [sz,~] = size(dff_W_FGred);
+    t = transpose(linspace(0,100,sz));
     figure;
-    plot(t_sol,dff_W_FGred) 
+    plot(t,dff_W_FGred) 
     title("diff( W_F + W^{red}_G )")
     yline(0)
     
