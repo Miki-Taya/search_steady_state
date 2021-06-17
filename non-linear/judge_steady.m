@@ -1,5 +1,4 @@
-clear
-
+function judge_steady(generator_state)
 %安定性を定常値を入力
 
 %安定
@@ -7,12 +6,15 @@ clear
 %E_star = [1;2.5;2.1];
 
 %安定
-steady_delta = [0.15708;0;-0.15708];
-steady_E = [3.2225;3.2225;3.2225];
+%steady_delta = [0.15708;0;-0.15708];
+%steady_E = [3.2225;3.2225;3.2225];
 
 %不安定
 %steady_delta = [0.942478;0;-1.41372];
 %steady_E = [3.2225;3.2225;3.2225];
+
+delta = generator_state(1:3);
+E = generator_state(7:9);
 
 %パラメータ設定
 taud = diag([5.1400, 5.9000, 8.9700]);
@@ -26,8 +28,8 @@ omega0 = 376.9911;
 
 for i = 1:3
     for j = 1:3
-        k(i,j) = -Bred(i,j)*cos(steady_delta(i) - steady_delta(j));
-        h(i,j) = -Bred(i,j)*sin(steady_delta(i) - steady_delta(j));
+        k(i,j) = -Bred(i,j)*cos(delta(i) - delta(j));
+        h(i,j) = -Bred(i,j)*sin(delta(i) - delta(j));
     end
 end
 
@@ -42,28 +44,28 @@ for i = 1:3
                     continue
                 end
                 
-                Ek = Ek + steady_E(q) * k(i,q);
-                Eh = Eh + steady_E(q) * h(i,q);                
+                Ek = Ek + E(q) * k(i,q);
+                Eh = Eh + E(q) * h(i,q);                
             end
             
-            L(i,j) = steady_E(i) * Ek; 
+            L(i,j) = E(i) * Ek; 
             A(i,j) = k(i,i) - Xd(i)/(Xq(i)*(Xd(i) - Xq(i)));
             B(i,j) = - Eh;
             C(i,j) = Eh; 
             
         else
             
-             L(i,j) = - steady_E(i) * steady_E(j) * k(i,j); 
+             L(i,j) = - E(i) * E(j) * k(i,j); 
              A(i,j) = k(i,j);
-             B(i,j) = steady_E(j) * h(i,j); 
-             C(i,j) = steady_E(i) * h(i,j);
+             B(i,j) = E(j) * h(i,j); 
+             C(i,j) = E(i) * h(i,j);
              
         end
     end
 end
 
 for i = 1:3
-    eh(i) = 2*steady_E(i)*h(i,i);
+    eh(i) = 2*E(i)*h(i,i);
 end
 
 Xdq = Xd - Xq;
