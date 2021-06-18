@@ -5,8 +5,9 @@ function plot_generator_state(error,tspan,initial_generator_state,steady_generat
   %パラメータ設定
   Xq = [0.9360;0.9110;0.6670];
   Xd = [1.5690;1.6510;1.2200];
-  BB = [-6.1331,1.4914,1.6779; 1.4914,-5.9131,2.2693; 1.6779,2.2693,-5.6149];  %BB：アドミタンス行列Yの虚部であるサセプタンス行列
-  Bred = - inv(diag(Xq) - diag(Xq)*BB*diag(Xq));
+  Y = [-6.1331j,1.4914j,1.6779j; 1.4914j,-5.9131j,2.2693j; 1.6779j,2.2693j,-5.6149j];  %アドミタンス行列Y
+  B_sus = imag(Y);  %B_sus：アドミタンス行列Yの虚部であるサセプタンス(susceptance)行列  %Bはシステム行列で使っているから。。 
+  Bred = - inv(diag(Xq) - diag(Xq)*B_sus*diag(Xq));
   omega0 = 376.9911;  %系統周波数：60[Htz]*2pi
   M = [100, 18, 12];
 
@@ -16,7 +17,8 @@ function plot_generator_state(error,tspan,initial_generator_state,steady_generat
 
   [Pmech_star,Vfield_star] = get_steady_Pmech_Vfield(delta_star,E_star,Bred,Xq,Xd);
 
-
+  %opt = odeset('RelTol',1e-3,'AbsTol',1e-6);
+  
   get_dx_nonlinear_ode_wrap = @(t, generator_state) get_dx_nonlinear_ode(t, generator_state, Xd, Xq, Bred, Pmech_star, Vfield_star, omega0, M);
 
   [t_sol, generator_state_sol] = ode45(get_dx_nonlinear_ode_wrap, tspan, initial_generator_state);
@@ -53,7 +55,7 @@ function plot_generator_state(error,tspan,initial_generator_state,steady_generat
   
   % flag_accum == 1 なら [Ured_G], [W_F], [Wred_G], [W_F + Wred_G] などのグラフを表示する
   if flag_accum == 1
-      plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, Bred, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
+      plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, B_sus ,Bred,Y, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
   end
 
   

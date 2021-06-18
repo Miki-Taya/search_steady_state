@@ -1,4 +1,4 @@
-function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, Bred, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
+function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, B_sus ,Bred,Y, Xd, Xq, Vfield_star, omega0, M, t_sol, flag_accum_diff)
   
   delta_star = steady_generator_state(1:3);
   deltaomega_star = transpose(steady_generator_state(4:6));
@@ -6,6 +6,7 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
   
   [sol_size,~] = size(t_sol);
 
+%---------------------------------------------------------------------------
   
 %F：非線形微分代数方程式系と非線形常微分方程式系は発電機バスのクロン縮約だから、機械サブシステムの方はどちらもこれで同じ
   W_F = zeros(sol_size,1);
@@ -25,13 +26,10 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
   end  
   
-  
-  
-
-
-%G：非線形微分代数方程式から発電機バスのクロン縮約をして、非線形常微分方程式系で考えたポテンシャルエネルギー関数(U_G)と蓄積関数(Wred_G)
-
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
  
+%G：非線形微分代数方程式から発電機バスのクロン縮約をして、非線形常微分方程式系で考えたポテンシャルエネルギー関数(Ured_G)と蓄積関数(Wred_G)
 
 % 1.1 matrix を for文で表した　こっちはよくない
 
@@ -131,7 +129,6 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
   
-  
 % 2.1 matrix は matrix のまま計算... nablaU * x の計算
   
   Ured_G = zeros(sol_size,1);
@@ -181,8 +178,15 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
         end
         Wred_G(t) = Ured_G(t) - Ured_G_star - trans_nablaU * x_G;
-
+        
+        %Eの初期誤差0のときに応答が振動してしまうｋら、Ured_G , trans_nablaU * x_G の値を調べる
+        if mod(t,300) == 0
+            Ured_G(t)
+            trans_nablaU * x_G
+        end
   end
+  
+  Ured_G_star
   
   
   
@@ -225,10 +229,115 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
   end
 
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+  
+% 微分代数方程式系の U_G を計算する
+  
+% まずは 電圧フェーザ:V (sol_size,1) から V_abs, V_arg を求める
+
+E = transpose(E);  % 行列計算のために E(i)を縦ベクトルにする
+delta = transpose(delta);  % 行列計算のために delta(i)を縦ベクトルにする
+V = zeros(3,sol_size);
+E_star = transpose(E_star);  % 行列計算のために E(i)を縦ベクトルにする
+delta_star = transpose(delta_star);  % 行列計算のために delta(i)を縦ベクトルにする
+V_star = 0;
+
+for t = 1:sol_size
+
+    V(:,t) = (diag(1/(1j*Xq)) + Y) \ diag(exp(1j*delta(:,t))./(1j*Xq)) * E(:,t);
+end
+
+V_star = (diag(1/(1j*Xq)) + Y) \ diag(exp(1j*delta_star)./(1j*Xq)) * E_star;
+
+V_abs = abs(V);
+V_arg = angle(V);
+V_abs_star = abs(V_star);
+V_arg_star = angle(V_star);
+
+
+% V を使って U_G を求める
+
+U_G = zeros(sol_size,1);
+U_G_star = 0;
+
+for t = 1:sol_size
+    
+    for i = 1:3
+        
+        if t == 1
+            U_G_star = U_G_star + Xd(i)*E_star(i)^2/(2*Xq(i)*(Xd(i)-Xq(i)))...
+                - E_star(i)*V_abs_star(i)/Xq(i)*cos(delta_star(i)-V_arg_star(i))...
+                + V_abs_star(i)^2/(2*Xq(i)) - B_sus(i,i)*V_abs_star(i)^2/2; 
+        end
+        
+        U_G(t) = U_G(t) + Xd(i)*E(i,t)^2/(2*Xq(i)*(Xd(i)-Xq(i)))...
+            - E(i,t)*V_abs(i,t)/Xq(i)*cos(delta(i,t)-V_arg(i,t))...
+            + V_abs(i,t)^2/(2*Xq(i)) - B_sus(i,i)*V_abs(i,t)^2/2;
+        
+        for j = 1:3    
+            
+            if j ~= i      
+                
+                if t == 1
+                    U_G_star = U_G_star - B_sus(i,j)*V_abs_star(i)*V_abs_star(j)*cos(V_arg_star(i)-V_arg_star(j));
+                end
+                
+              U_G(t) = U_G(t) - B_sus(i,j)*V_abs(i,t)*V_abs(j,t)*cos(V_arg(i,t)-V_arg(j,t));
+            
+            end       
+        end        
+    end   
+end
+    
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------
+
+% U_G から W_G を求める
+
+  E = transpose(E);  % E(i)を横ベクトルに戻す
+  delta = transpose(delta);  % delta(i)を横ベクトルに戻す
+
+  trans_nablaU = zeros(1,6);
+  x_G = zeros(6,1);
+  W_G = zeros(sol_size,1);
+
+
+  for t = 1:sol_size
+      
+        for i = 1:3
+              %電気サブシステムGの出力: y_G = -Ei * Σ(j=1,2,3) Ej * Bredij * sinδij
+              y_G = 0;
+        
+              for j = 1:3
+                          
+                  y_G = y_G - E(t,i) * E(t,j)*Bred(i,j)*sin(delta(t,i)-delta(t,j));
+              
+              end
+              
+              % trans_nablaU = [y_G1,y_G2,yG3,Vfield_star(1)/(Xd(1)-Xq(1)),Vfield_star(i)/(Xd(2)-Xq(2)),Vfield_star(3)/(Xd(3)-Xq(3))]
+              trans_nablaU(i) = y_G;
+              trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
+              
+              % x_G = [delta(t,1)-delta_star(1); delta(t,2)-delta_star(2); delta(t,3)-delta_star(3); E(t,1)-E_star(1); E(t,2)-E_star(2); E(t,3)-E_star(3)];
+              x_G(i) = delta(t,i)-delta_star(i);
+              x_G(i+3) = E(t,i)-E_star(i);
+
+        end
+        
+        W_G(t) = U_G(t) - U_G_star - trans_nablaU * x_G;
+  end
+  
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------  
   
   figure;
   plot(t_sol, Ured_G)
   title("U^{red}_G")
+  
+  figure;
+  plot(t_sol, U_G)
+  title("U_G")
   
   figure;
   plot(t_sol, W_F)
@@ -241,6 +350,10 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
   figure;
   plot(t_sol, Wred_G)
   title("W^{red}_G")
+  
+  figure;
+  plot(t_sol, W_G)
+  title("W_G")
 %{  
   figure;
   plot(t_sol, Wred_G_inputstar)
@@ -249,11 +362,17 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
   figure;
   plot(t_sol,W_F+Wred_G)
   title("W_F + W^{red}_G")
+  
+  figure;
+  plot(t_sol,W_F+W_G)
+  title("W_F + W_G")
 
+%---------------------------------------------------------------------------
+%---------------------------------------------------------------------------  
   
-  
-  % flag_accum_diff == 1 なら [diff( W_F )], [diff( Wred_G )], [diff( W_F + W^{red}_G )] を表示
+% flag_accum_diff == 1 なら [diff( W_F )], [diff( Wred_G )], [diff( W_F + W^{red}_G )] を表示
   if flag_accum_diff == 1
+      
  %{
     dff_F = diff(W_F);
     [sz,~] = size(dff_F);
@@ -270,29 +389,27 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
     title("diff( Wred_G )")
 
  %}
-      
 
     dff_W_FGred = diff(W_F+Wred_G);
+    [sz,~] = size(dff_W_FGred);
+    t = transpose(linspace(0,100,sz));
     figure;
-    plot(t_sol,dff_W_FGred) 
+    plot(t,dff_W_FGred) 
     title("diff( W_F + W^{red}_G )")
     yline(0)
     
-    max_diff_W_FGred = max(dff_W_FGred)
-    
-    
-    
-  %{
-    dff_FGred = diff(W_F+Wred_G);
-
-    [sz,~] = size(dff_FGred);
+    dff_W_FG = diff(W_F+W_G);
+    [sz,~] = size(dff_W_FG);
     t = transpose(linspace(0,100,sz));
     figure;
-    plot(t, dff_FGred)
-    title("diff( W_F + W^{red}_G )")
-  %}  
+    plot(t,dff_W_FG) 
+    title("diff( W_F + W_G )")
+    yline(0)
+
+% dff_W_FGred は常に負であってほしい。max を取ってそれを調べる
+    max_diff_W_FGred = max(dff_W_FGred)
+    max_diff_W_FG = max(dff_W_FG)
+
   end
-
-
 
 end
