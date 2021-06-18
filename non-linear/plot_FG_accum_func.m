@@ -178,12 +178,13 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
         end
         Wred_G(t) = Ured_G(t) - Ured_G_star - trans_nablaU * x_G;
-        
+        %{
         %Eの初期誤差0のときに応答が振動してしまうｋら、Ured_G , trans_nablaU * x_G の値を調べる
         if mod(t,300) == 0
             Ured_G(t)
             trans_nablaU * x_G
         end
+        %}
   end
   
   Ured_G_star
@@ -330,42 +331,68 @@ end
   
 %---------------------------------------------------------------------------
 %---------------------------------------------------------------------------  
-  
-  figure;
-  plot(t_sol, Ured_G)
-  title("U^{red}_G")
-  
-  figure;
-  plot(t_sol, U_G)
-  title("U_G")
-  
+
   figure;
   plot(t_sol, W_F)
   title("W_F")
+  
+  figure;
+  subplot(1,3,1)
+  plot(t_sol, [Ured_G, U_G])
+  title("U^{red}_G,U^{red}_G")
+  
+  subplot(1,3,2)
+  plot(t_sol, [Wred_G, W_G])
+  title("W^{red}_G, W_G")  
+  
+  subplot(1,3,3)
+  plot(t_sol,[W_F+Wred_G, W_F+W_G])
+  title("W_F + W^{red}_G, W_F+W_G")  
+    
+
+  %別々に表示
+  figure;
+  subplot(2,3,1)
+  plot(t_sol, Ured_G)
+  title("U^{red}_G")
+  
+  subplot(2,3,2)
+  plot(t_sol, Wred_G)
+  title("W^{red}_G")
+  
+  subplot(2,3,3)
+  plot(t_sol,W_F+Wred_G)
+  title("W_F + W^{red}_G")
+  
+  subplot(2,3,4)
+  plot(t_sol, U_G)
+  title("U_G")
+  
+  subplot(2,3,5)
+  plot(t_sol, W_G)
+  title("W_G")
+  
+  subplot(2,3,6)
+  plot(t_sol,W_F+W_G)
+  title("W_F + W_G") 
+
+  
 %{  
   figure;
   plot(t_sol, W_F_star)
   title("W_F *")
 %}  
-  figure;
-  plot(t_sol, Wred_G)
-  title("W^{red}_G")
+
   
-  figure;
-  plot(t_sol, W_G)
-  title("W_G")
+
 %{  
   figure;
   plot(t_sol, Wred_G_inputstar)
   title("W^{red}_G *")
 %}
-  figure;
-  plot(t_sol,W_F+Wred_G)
-  title("W_F + W^{red}_G")
+
   
-  figure;
-  plot(t_sol,W_F+W_G)
-  title("W_F + W_G")
+
 
 %---------------------------------------------------------------------------
 %---------------------------------------------------------------------------  
@@ -389,11 +416,24 @@ end
     title("diff( Wred_G )")
 
  %}
+      
+    %一緒に表示
+    dff_W_FGred = diff(W_F+Wred_G);
+    dff_W_FG = diff(W_F+W_G);
+    [sz,~] = size(dff_W_FGred);
+    t = transpose(linspace(0,100,sz));
+    figure;
+    plot(t,[dff_W_FGred, dff_W_FG]) 
+    title("diff( W_F + W^{red}_G ), diff( W_F + W_G )")
+    yline(0)    
+      
 
+    %別々に表示
     dff_W_FGred = diff(W_F+Wred_G);
     [sz,~] = size(dff_W_FGred);
     t = transpose(linspace(0,100,sz));
     figure;
+    subplot(1,2,1)
     plot(t,dff_W_FGred) 
     title("diff( W_F + W^{red}_G )")
     yline(0)
@@ -401,11 +441,12 @@ end
     dff_W_FG = diff(W_F+W_G);
     [sz,~] = size(dff_W_FG);
     t = transpose(linspace(0,100,sz));
-    figure;
+    subplot(1,2,2)
     plot(t,dff_W_FG) 
     title("diff( W_F + W_G )")
     yline(0)
 
+      
 % dff_W_FGred は常に負であってほしい。max を取ってそれを調べる
     max_diff_W_FGred = max(dff_W_FGred)
     max_diff_W_FG = max(dff_W_FG)
