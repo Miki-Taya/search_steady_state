@@ -154,10 +154,15 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
                           % star の値は t によらないため、t == 1 のときだけ計算
                           if t == 1
                             Ured_Gi_star = Ured_Gi_star + (E_star(i)*E_star(j)*Bred(i,j)*cos(delta_star(i)-delta_star(j))) /2;
+                            
+                            y_G = y_G - E_star(i) * E_star(j)*Bred(i,j)*sin(delta_star(i)-delta_star(j));
+                                                                
+                            % trans_nablaU = [y_G1,y_G2,yG3,Vfield_star(1)/(Xd(1)-Xq(1)),Vfield_star(i)/(Xd(2)-Xq(2)),Vfield_star(3)/(Xd(3)-Xq(3))]
+                            trans_nablaU(i) = y_G;
+                            trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
                           end
                           
                   Ured_Gi = Ured_Gi + (E(t,i)*E(t,j)*Bred(i,j)*cos(delta(t,i)-delta(t,j))) /2;
-                  y_G = y_G - E(t,i) * E(t,j)*Bred(i,j)*sin(delta(t,i)-delta(t,j));
               
               end
               
@@ -167,10 +172,7 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
                           
               % Ured_G = Ured_G1 + Ured_G2 + UredG3
               Ured_G(t) = Ured_G(t) + Ured_Gi;
-              
-              % trans_nablaU = [y_G1,y_G2,yG3,Vfield_star(1)/(Xd(1)-Xq(1)),Vfield_star(i)/(Xd(2)-Xq(2)),Vfield_star(3)/(Xd(3)-Xq(3))]
-              trans_nablaU(i) = y_G;
-              trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
+
               
               % x_G = [delta(t,1)-delta_star(1); delta(t,2)-delta_star(2); delta(t,3)-delta_star(3); E(t,1)-E_star(1); E(t,2)-E_star(2); E(t,3)-E_star(3)];
               x_G(i) = delta(t,i)-delta_star(i);
@@ -186,9 +188,7 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
         end
         %}
   end
-  
-  Ured_G_star
-  
+    
   
   
 % 2.2 平衡点での Wred_G_star を確認... delta(t,i) -> delta_star(i), E(t,i) -> E_star(i)
@@ -240,8 +240,10 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 E = transpose(E);  % 行列計算のために E(i)を縦ベクトルにする (3*sol_size )
 delta = transpose(delta);  % 行列計算のために delta(i)を縦ベクトルにする(3*sol_size )
 V = zeros(3,sol_size); % (3*sol_size )
+%{
 E_star = transpose(E_star);  % 行列計算のために E(i)を縦ベクトルにする
 delta_star = transpose(delta_star);  % 行列計算のために delta(i)を縦ベクトルにする
+%}
 V_star = 0;
 
 for t = 1:sol_size
@@ -284,7 +286,7 @@ for t = 1:sol_size
                     U_G_star = U_G_star - B_sus(i,j)*V_abs_star(i)*V_abs_star(j)*cos(V_arg_star(i)-V_arg_star(j));
                 end
                 
-              U_G(t) = U_G(t) - B_sus(i,j)*V_abs(i,t)*V_abs(j,t)*cos(V_arg(i,t)-V_arg(j,t));
+                U_G(t) = U_G(t) - B_sus(i,j)*V_abs(i,t)*V_abs(j,t)*cos(V_arg(i,t)-V_arg(j,t));
             
             end       
         end        
@@ -298,8 +300,6 @@ end
 
   E = transpose(E);  % E(i)を横ベクトルに戻す  (sol_size*3)
   delta = transpose(delta);  % delta(i)を横ベクトルに戻す  (sol_size*3)
-  V_abs = transpose(V_abs);  % V_abs(i)を横ベクトルに戻す  (sol_size*3)
-  V_arg = transpose(V_arg);  % V_arg(i)を横ベクトルに戻す  (sol_size*3)
 
   trans_nablaU = zeros(1,6);
   x_G = zeros(6,1);
@@ -309,12 +309,14 @@ end
   for t = 1:sol_size
       
         for i = 1:3
-              %電気サブシステムGの出力: y_G を trans_nablaU(1~3)に代入
-              % y_G = E(i)*V_abs(i)/Xq(i)*sin(delta(i) - V_arg(i))
-              % trans_nablaU = [y_G1,y_G2,yG3,Vfield_star(1)/(Xd(1)-Xq(1)),Vfield_star(i)/(Xd(2)-Xq(2)),Vfield_star(3)/(Xd(3)-Xq(3))]
-              trans_nablaU(i) = E(t,i)*V_abs(t,i)/Xq(i)*sin(delta(t,i)-V_arg(t,i));              
-              trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
-              
+                if t == 1
+                      %電気サブシステムGの出力: y_G を trans_nablaU(1~3)に代入
+                      % y_G = E(i)*V_abs(i)/Xq(i)*sin(delta(i) - V_arg(i))
+                      % trans_nablaU = [y_G1,y_G2,yG3,Vfield_star(1)/(Xd(1)-Xq(1)),Vfield_star(i)/(Xd(2)-Xq(2)),Vfield_star(3)/(Xd(3)-Xq(3))]
+                      trans_nablaU(i) = E_star(i)*V_abs_star(i)/Xq(i)*sin(delta_star(i)-V_arg_star(i));              
+                      trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
+                end
+                
               % x_G = [delta(t,1)-delta_star(1); delta(t,2)-delta_star(2); delta(t,3)-delta_star(3); E(t,1)-E_star(1); E(t,2)-E_star(2); E(t,3)-E_star(3)];
               x_G(i) = delta(t,i)-delta_star(i);
               x_G(i+3) = E(t,i)-E_star(i);

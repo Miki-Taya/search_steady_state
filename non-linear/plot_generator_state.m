@@ -16,11 +16,11 @@ function plot_generator_state(error,tspan,initial_generator_state,steady_generat
 
   [Pmech_star,Vfield_star] = get_steady_Pmech_Vfield(delta_star,E_star,Bred,Xq,Xd);
 
-  %opt = odeset('RelTol',1e-3,'AbsTol',1e-6);
+  opt = odeset('RelTol',1e-10,'AbsTol',1e-20);
   
   get_dx_nonlinear_ode_wrap = @(t, generator_state) get_dx_nonlinear_ode(t, generator_state, Xd, Xq, Bred, Pmech_star, Vfield_star, omega0, M);
 
-  [t_sol, generator_state_sol] = ode45(get_dx_nonlinear_ode_wrap, tspan, initial_generator_state);
+  [t_sol, generator_state_sol] = ode45(get_dx_nonlinear_ode_wrap, tspan, initial_generator_state,opt);
 
   delta = generator_state_sol(:,1:3);
   deltaomega = generator_state_sol(:,4:6);
