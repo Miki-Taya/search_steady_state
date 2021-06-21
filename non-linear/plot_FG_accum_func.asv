@@ -239,7 +239,7 @@ function plot_FG_accum_func(tspan,steady_generator_state, delta, deltaomega, E, 
 
 E = transpose(E);  % 行列計算のために E(i)を縦ベクトルにする (3*sol_size )
 delta = transpose(delta);  % 行列計算のために delta(i)を縦ベクトルにする(3*sol_size )
-V = zeros(3,sol_size); % (3*sol_size )
+V = zeros(3,sol_size); %
 E_star = transpose(E_star);  % 行列計算のために E(i)を縦ベクトルにする
 delta_star = transpose(delta_star);  % 行列計算のために delta(i)を縦ベクトルにする
 V_star = 0;
@@ -298,8 +298,6 @@ end
 
   E = transpose(E);  % E(i)を横ベクトルに戻す  (sol_size*3)
   delta = transpose(delta);  % delta(i)を横ベクトルに戻す  (sol_size*3)
-  V_abs = transpose(V_abs);  % V_abs(i)を横ベクトルに戻す  (sol_size*3)
-  V_arg = transpose(V_arg);  % V_arg(i)を横ベクトルに戻す  (sol_size*3)
 
   trans_nablaU = zeros(1,6);
   x_G = zeros(6,1);
@@ -312,7 +310,7 @@ end
               %電気サブシステムGの出力: y_G を trans_nablaU(1~3)に代入
               % y_G = E(i)*V_abs(i)/Xq(i)*sin(delta(i) - V_arg(i))
               % trans_nablaU = [y_G1,y_G2,yG3,Vfield_star(1)/(Xd(1)-Xq(1)),Vfield_star(i)/(Xd(2)-Xq(2)),Vfield_star(3)/(Xd(3)-Xq(3))]
-              trans_nablaU(i) = E(t,i)*V_abs(t,i)/Xq(i)*sin(delta(t,i)-V_arg(t,i));              
+              trans_nablaU(i) = E(t,i)*V_abs(t,i)/Xq(i)*sin(delta(i)-V_arg(i));              
               trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
               
               % x_G = [delta(t,1)-delta_star(1); delta(t,2)-delta_star(2); delta(t,3)-delta_star(3); E(t,1)-E_star(1); E(t,2)-E_star(2); E(t,3)-E_star(3)];
