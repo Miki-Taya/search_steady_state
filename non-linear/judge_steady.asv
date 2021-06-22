@@ -86,18 +86,17 @@ sum(B,2);
 
 %必要な条件
 % linear:[psi is steady](線形システムの漸近安定性) and [matrix:L * span{1} = 0, matrix:B * span{1} = 0]
-% feedback Gの受動性 == 受動送電条件(ⅰ),(ⅲ)を満たす: (ⅰ)[A is steady] and (ⅲ)[Lo is symmetric positive semi-definite]
-% non-linear: 受動送電条件(ⅰ)(ⅲ)を満たす == 蓄積関数 W_G が半正定関数
-% non-linear: W_G をリアプノフ関数と見て、システムが周波数安定 == W_G が単調減少
+% feedback Gの受動性:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
+% non-linear: 蓄積関数 W が半正定関数
 
-disp('線形システムの漸近安定性');
-
+disp('せん');
 % psi の安定性を判定
 if all(real(lamdapsi) < 0)
     disp('Matrix: psi is steady.');
 else
     disp('Matrix: psi is not steady.');
 end
+
 
 % L や B のカーネルが 1 ( matrix:L * span{1} = 0 )かどうかを判定
 if all(abs(sum(B,2)) < 10^(-14)) % e-15 程度の誤差がある
@@ -112,11 +111,7 @@ else
     disp('Kernel of Matrix:L is not span{1}.');
 end
 
-
-
-disp('受動送電条件(ⅰ),(ⅲ)');
-
-% 受動送電条件(ⅰ): A の安定性を判別
+% 受動送電条件(i): A の安定性を判別
 
 if all(real(lamdaA) < 0)
     disp('Matrix: A is steady.');
@@ -125,7 +120,7 @@ else
 end
 
 
-% 受動送電条件(ⅲ): Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）
+% 受動送電条件(ii): Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）
 Lo = L - C*(A\B);
 
 try chol(Lo); %対称正定値行列を対称部分と上三角部分だけ使用して表す関数 chol を呼ぶ
