@@ -85,16 +85,33 @@ sum(B,2);
 
 
 %必要な条件
-% linear:[psi is steady](線形システムの漸近安定性) and [L and B have zero eigenvalue]
+% linear:[psi is steady](線形システムの漸近安定性) and [matrix:L * span{1} = 0, matrix:B * span{1} = 0]
 % feedback Gの受動性:[A is steady] and [Lo is symmetric positive semi-definite](受動送電条件1,3)
 % non-linear: 蓄積関数 W が半正定関数
 
-% psi や A の安定性や L や B がゼロ固有値を持つかどうかを判定
+disp('せん');
+% psi の安定性を判定
 if all(real(lamdapsi) < 0)
     disp('Matrix: psi is steady.');
 else
     disp('Matrix: psi is not steady.');
 end
+
+
+% L や B のカーネルが 1 ( matrix:L * span{1} = 0 )かどうかを判定
+if all(abs(sum(B,2)) < 10^(-14)) % e-15 程度の誤差がある
+    disp('Kernel of Matrix:B is span{1}.');
+else
+    disp('Kernel of Matrix:B is not span{1}.');
+end
+
+if all(abs(sum(L,2)) < 10^(-14))
+    disp('Kernel of Matrix:L is span{1}.');
+else
+    disp('Kernel of Matrix:L is not span{1}.');
+end
+
+% 受動送電条件(i): A の安定性を判別
 
 if all(real(lamdaA) < 0)
     disp('Matrix: A is steady.');
@@ -102,19 +119,8 @@ else
     disp('Matrix: A is not steady.');
 end
 
-if all(abs(sum(B,2)) < 10^(-12)) % e-17 程度の誤差がある
-    disp('Kernel of Matrix:B is span(1).');
-else
-    disp('Kernel of Matrix:B is not span(1).');
-end
 
-if all(abs(sum(L,2)) < 10^(-12))
-    disp('Kernel of Matrix:L is span(1).');
-else
-    disp('Kernel of Matrix:L is not span(1).');
-end
-
-%Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）
+% 受動送電条件(ii): Loが対称正定値行列かどうかを判定（semi-definiteより厳しい条件）
 Lo = L - C*(A\B);
 
 try chol(Lo); %対称正定値行列を対称部分と上三角部分だけ使用して表す関数 chol を呼ぶ
