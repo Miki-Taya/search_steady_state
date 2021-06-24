@@ -334,15 +334,24 @@ delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
 
   end
 %---------------------------------------------------------------------------
-%---------------------------------------------------------------------------  
+%--------------------------------------------------------------------------- 
+% DAE と ODE の差分
+
   figure;
   plot(t_sol,U_G-Ured_G)
   title("U_G - Ured_G")
   
   figure;
+  plot(t_sol,W_G - Wred_G)
+  title("W_G - Wred_G") 
+  
+% W_F
+  figure;
   plot(t_sol, W_F)
   title("W_F")
+ 
   
+% 同じグラフ内で表示して比較
   figure;
   subplot(1,3,1)
   plot(t_sol, [Ured_G, U_G])
