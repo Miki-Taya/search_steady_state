@@ -165,7 +165,7 @@ function plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, B_sus 
 
                         %電気サブシステムGの出力: y_G = -Ei * Σ(j=1,2,3) Ej * Bredij * sinδij                                                  
                         % trans_nablaU(1~3) に y_G_star(i) を代入
-                        trans_nablaU(i) = trans_nablaU(i) - E_star(i) * E_star(j)*Bred(i,j)*sin(delta_star(i)-delta_star(j));                            
+                        trans_nablaU(i) = trans_nablaU(i) - E_star(i)*E_star(j)*Bred(i,j)*sin(delta_star(i)-delta_star(j));                            
 
                   end
                        
@@ -244,17 +244,26 @@ V = zeros(3,sol_size); % (3*sol_size )
 
 for t = 1:sol_size
 
-    V(:,t) = (diag(1/(1j*Xq)) + Y) \ diag(exp(1j*delta(:,t))./(1j*Xq)) * E(:,t);
+    V(:,t) = (diag(1./(1j*Xq)) + Y) \ diag(exp(1j*delta(:,t))./(1j*Xq)) * E(:,t);
     
 end
 
-V_star = (diag(1/(1j*Xq)) + Y) \ diag(exp(1j*delta_star)./(1j*Xq)) * E_star;
-
+V_star = (diag(1./(1j*Xq)) + Y) \ (diag(exp(1j*delta_star)./(1j*Xq))) * E_star;
 
 V_abs = abs(V);
 V_arg = angle(V);
 V_abs_star = abs(V_star);
 V_arg_star = angle(V_star);
+
+
+% V_star を使って、微分代数方程式の右辺が 0 になるかを見る
+
+tauE_star = zeros(3,1);
+
+for i = 1:3
+    tauE_star(i) = -Xd(i)/Xq(i)*E_star(i) + (Xd(i)/Xq(i)-1)*V_abs_star(i)...
+                   *cos(delta_star(i)-V_arg_star(i)) + Vfield_star(i);
+end
 
 
 % V を使って U_G を求める
@@ -284,20 +293,19 @@ for t = 1:sol_size
                     U_G_star = U_G_star - B_sus(i,j)*V_abs_star(i)*V_abs_star(j)*cos(V_arg_star(i)-V_arg_star(j));
                 end
                 
-                U_G(t) = U_G(t) - B_sus(i,j)*V_abs(i,t)*V_abs(j,t)*cos(V_arg(i,t)-V_arg(j,t));
+                U_G(t) = U_G(t) - 1/2 * B_sus(i,j)*V_abs(i,t)*V_abs(j,t)*cos(V_arg(i,t)-V_arg(j,t));
             
             end       
         end        
     end   
 end
-    
+E = transpose(E);  % E(t)を横ベクトルに戻す  (sol_size*3)
+delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
+  
 %---------------------------------------------------------------------------
 %---------------------------------------------------------------------------
 % 微分代数方程式系
 % U_G から W_G を求める
-
-  E = transpose(E);  % E(t)を横ベクトルに戻す  (sol_size*3)
-  delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
 
   trans_nablaU = zeros(1,6);
   x_G = zeros(6,1);
@@ -316,18 +324,21 @@ end
                       trans_nablaU(i+3) = Vfield_star(i)/(Xd(i)-Xq(i));
                 end
                 
-              % x_G = [delta(t,1)-delta_star(1); delta(t,2)-delta_star(2); delta(t,3)-delta_star(3); E(t,1)-E_star(1); E(t,2)-E_star(2); E(t,3)-E_star(3)];
-              x_G(i) = delta(t,i)-delta_star(i);
-              x_G(i+3) = E(t,i)-E_star(i);
+                % x_G = [delta(t,1)-delta_star(1); delta(t,2)-delta_star(2); delta(t,3)-delta_star(3); E(t,1)-E_star(1); E(t,2)-E_star(2); E(t,3)-E_star(3)];
+                x_G(i) = delta(t,i)-delta_star(i);
+                x_G(i+3) = E(t,i)-E_star(i);
 
         end
-        
+
         W_G(t) = U_G(t) - U_G_star - trans_nablaU * x_G;
+
   end
-  
 %---------------------------------------------------------------------------
 %---------------------------------------------------------------------------  
-
+  figure;
+  plot(t_sol,U_G-Ured_G)
+  title("U_G - Ured_G")
+  
   figure;
   plot(t_sol, W_F)
   title("W_F")
