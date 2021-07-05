@@ -28,14 +28,14 @@ function plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, B_sus 
   
 %---------------------------------------------------------------------------
 %---------------------------------------------------------------------------
- 
+  %{ 
 %G：非線形微分代数方程式から発電機バスのクロン縮約をして、非線形常微分方程式系で考えたポテンシャルエネルギー関数(Ured_G)と蓄積関数(Wred_G)
 
 % 1.1 matrix を for文で表した　こっちはよくない
 
 
   % nabla は nabla を含む項全体を表す
-  %{
+
   
   Ured_G = zeros(1,sol_size);
   Ured_G_star = 0;
@@ -80,10 +80,10 @@ function plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, B_sus 
   %}
   
 
-  
+  %{  
 % 1.2 平衡点を代入したら W は 0 にならなければならない。そのテスト。for ver.
 
-  %{
+
   
   Ured_G = zeros(1,sol_size);
   Ured_G_star = 0;
@@ -128,7 +128,7 @@ function plot_FG_accum_func(steady_generator_state, delta, deltaomega, E, B_sus 
 
 %--------------------------------------------------------------------------
 %--------------------------------------------------------------------------
-  
+
 % 2.1 matrix は matrix のまま計算... nablaU * x の計算
   
   Ured_G = zeros(sol_size,1);
@@ -255,7 +255,7 @@ V_arg = angle(V);
 V_abs_star = abs(V_star);
 V_arg_star = angle(V_star);
 
-
+%{
 % V_star を使って、微分代数方程式の右辺が 0 になるかを見る
 
 tauE_star = zeros(3,1);
@@ -265,7 +265,7 @@ for i = 1:3
                    *cos(delta_star(i)-V_arg_star(i)) + Vfield_star(i);
 end
 
-
+%}
 % V を使って U_G を求める
 
 U_G = zeros(sol_size,1);
@@ -395,8 +395,27 @@ delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
   plot(t_sol,W_F+W_G)
   title("W_F + W_G") 
   
-  U_G_star
-  Ured_G_star
+
+  %別々に表示 W_F,W_G,W_F+W_G;W_F,Wred_G,W_F+Wred_G
+  figure;
+  subplot(2,3,1)
+  plot(t_sol, W_F)
+  
+  subplot(2,3,2)
+  plot(t_sol, W_G)
+  
+  subplot(2,3,3)
+  plot(t_sol,W_F+W_G)
+  
+  subplot(2,3,4)
+  plot(t_sol, W_F)
+  
+  subplot(2,3,5)
+  plot(t_sol, Wred_G)
+  
+  subplot(2,3,6)
+  plot(t_sol,W_F+Wred_G)
+
   
 %{  
   figure;

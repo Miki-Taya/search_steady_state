@@ -1,4 +1,5 @@
 
+
 function plot_generator_state(error,tspan,initial_generator_state,steady_generator_state,flag_accum,flag_accum_diff)
 
   %パラメータ設定
@@ -29,20 +30,20 @@ function plot_generator_state(error,tspan,initial_generator_state,steady_generat
   subplot(1,3,1)
   plot(t_sol, delta)
   yline(delta_star)
-  title('δ')
-  legend('δ_1','δ_2','δ_3')
+  %title('δ')
+  %legend('δ_1','δ_2','δ_3')
 
   subplot(1,3,2)
   plot(t_sol, deltaomega)
   yline(0)
-  title('Δω')
-  legend('Δω_1','Δω_2','Δω_3')
+  %title('Δω')
+  %legend('Δω_1','Δω_2','Δω_3')
 
   subplot(1,3,3)
   plot(t_sol, E)
   yline(E_star)
-  title('E')
-  legend('E_1','E_2','E_3')
+  %title('E')
+  %legend('E_1','E_2','E_3')
   %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
   sgt = sgtitle({'初期誤差',num2str(transpose(error)),' ' ,'初期値',num2str(transpose(initial_generator_state))});
   sgt.FontSize = 10;
