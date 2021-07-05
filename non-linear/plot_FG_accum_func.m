@@ -290,7 +290,7 @@ for t = 1:sol_size
             if j ~= i      
                 
                 if t == 1
-                    U_G_star = U_G_star - B_sus(i,j)*V_abs_star(i)*V_abs_star(j)*cos(V_arg_star(i)-V_arg_star(j));
+                    U_G_star = U_G_star - 1/2 * B_sus(i,j)*V_abs_star(i)*V_abs_star(j)*cos(V_arg_star(i)-V_arg_star(j));
                 end
                 
                 U_G(t) = U_G(t) - 1/2 * B_sus(i,j)*V_abs(i,t)*V_abs(j,t)*cos(V_arg(i,t)-V_arg(j,t));
@@ -395,7 +395,7 @@ delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
   plot(t_sol,W_F+W_G)
   title("W_F + W_G") 
   
-  %別々に表示
+  %別々に表示 W_F,W_G,W_F+W_G;W_F,Wred_G,W_F+Wred_G
   figure;
   subplot(2,3,1)
   plot(t_sol, W_F)
