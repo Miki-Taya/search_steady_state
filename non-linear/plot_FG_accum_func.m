@@ -394,9 +394,7 @@ delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
   subplot(2,3,6)
   plot(t_sol,W_F+W_G)
   title("W_F + W_G") 
-  
-  U_G_star
-  Ured_G_star
+
   
 %{  
   figure;
