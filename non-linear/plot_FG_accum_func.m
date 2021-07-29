@@ -405,7 +405,7 @@ delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
   plot(t_sol, W_G)
   
   subplot(2,3,3)
-  plot(t_sol,W_F+W_G)
+  plot(t_sol,W_F+W_G, "LineWidth", 2)
   
   subplot(2,3,4)
   plot(t_sol, W_F)
@@ -414,7 +414,7 @@ delta = transpose(delta);  % delta(t)を横ベクトルに戻す  (sol_size*3)
   plot(t_sol, Wred_G)
   
   subplot(2,3,6)
-  plot(t_sol,W_F+Wred_G)
+  plot(t_sol,W_F+Wred_G, "LineWidth", 2)
 
   
 %{  

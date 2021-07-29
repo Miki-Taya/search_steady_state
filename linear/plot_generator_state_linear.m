@@ -12,20 +12,20 @@ function last = plot_generator_state_linear(error, tspan, psi)
 
   last = generator_state_sol(end,:);
   
-  subplot(3,1,1)
+  subplot(1,3,1)
   plot(t_sol, delta)
-  ylabel('delta')
-  legend('delta1','delta2','delta3')
+  %ylabel('delta')
+  %legend('delta1','delta2','delta3')
 
-  subplot(3,1,2)
+  subplot(1,3,2)
   plot(t_sol, deltaomega)
-  ylabel('deltaomega')
-  legend('deltaomega1','deltaomega2','deltaomega3')
+  %ylabel('deltaomega')
+  %legend('deltaomega1','deltaomega2','deltaomega3')
   
-  subplot(3,1,3)
-  plot(t_sol, E)
-  ylabel('E')
-  legend('E1','E2','E3')
+  subplot(1,3,3)
+  plot(t_sol, E,"LineWidth",2)
+  %ylabel('E')
+  %legend('E1','E2','E3')
   
   sgt = sgtitle(['＜線形モデル応答＞　初期値:',num2str(transpose(error))]);
   sgt.FontSize = 10;

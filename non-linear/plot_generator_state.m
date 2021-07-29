@@ -40,11 +40,11 @@ function plot_generator_state(error,tspan,initial_generator_state,steady_generat
   %legend('Δω_1','Δω_2','Δω_3')
 
   subplot(1,3,3)
-  plot(t_sol, E)
+  plot(t_sol, E, "LineWidth",2)
   yline(E_star)
   %title('E')
   %legend('E_1','E_2','E_3')
-  %axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
+  axis([0 100 3.21 3.24]) %軸の範囲指定　x軸[0 100]  y軸[3.21 3.24]
   sgt = sgtitle({'初期誤差',num2str(transpose(error)),' ' ,'初期値',num2str(transpose(initial_generator_state))});
   sgt.FontSize = 10;
   
